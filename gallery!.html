@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Gallery - Restaurant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            color: #333;
+        }
+        nav {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #495057;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Menu</a></li>
+            <li><a href="#">Gallery</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <h1>Food Gallery</h1>
+        <div class="gallery">
+            <!-- Chinese Cuisine -->
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="data:image/webp;base64,UklGRv4OAABXRUJQVlA4IPIOAACwUACdASqrAMIAP0GKtVUvqaSkMzoMEfAoCWYAyYC1F1FXtEM1xbIbTaqu2r8x3af8DnS7S5rwRtltffrMUeh//PO9/Gf/D0904orQ+0KlZFkpsdDZVmk2HdYo1IVxcGte6noXEQXT+WCP4SJ7eMIlVLdfewi3JGcFnfR/l7bw6tGQFrWH/uB875SKe5LAewe3guW9GABMcOQljQbhy84EGC4nNOwkvZsnTuY9Q60sdJP77bjWtJjq3dvrhAz9aIuVZXqEderOsm3dJ96tHhvNfwoDse7iNFhn1+CqsAlohKwKVfPJyYyZC77PtSsSoiG0UwDgbTkV/iZXQPH0GQG1O8yFHffTbzJ8O9LY67hogujKqW3N79hSHgOcJeB+mu50eR5oJIc5T6DkqZW1qdfO0beZrrDwdz4grAD791vJZDa9K9zCkcca4GEfX5q1ucez/hglhioBvF1B/ZqaRIhAiEvRRS/rox/i4hJ6ZrZuGdk+7epycUei0v4ZAQc1cIpsUFy52BqUSIrYyh0BnpxWlcK+k303LqLcLU/rw8uM8F2KQhPfaRVlYR+fY2WR5yI2OLHrqL1tLDyF/EaKlc8zWLKdeS/MNcwLHD4n3qq7phBL+zBnma0jIOzAhkWc3zj4HMfn60DAvPvSfBtltRQbeYpZ4eeWbMHQtFgz7/VR3PV2hnYQEWJlqoVUkRyiFMn9Ah2Wi7VvAXgAXyaptZfi/wdEEQCv3wc5BjR8Ee7Q17TV913a+d4APeAyVZDMjFTAYoOqtmLQBZOL+BEhTu1I5TOEVHY4LIZMejm5WvPgnOM3HYuSvKaTGHmPf7sV5UBSOSQB21CWlwH4wlAXEBgmNoypIB7IAiznmxnPNSAA/q60J3yOCDQK3+hVi5PywzZbsuwMUFo/bRorpkr/BC92BnMmjKTWoso9SwjIkY5edFq01dBTAA+gNphaAfnu/kS4ccXnzOhuysUUi2++GEOTm+E0eRfnCcHVj2m6uBzo33osRmu6lG3dD0nO4DCXTgac2KUEaN9wEF1S8QI+LbVPm8VqcwP+cH6mFrpNDgW0cITykmLQrglneulETj6y90j+MfpI0+5H3IcT8klyS7hUzH9FlHB6a0n5tBiWIdFDbyVVa2YKX2mxzEPvozPeQSCyckWr9DSnWrAAdt91XVxpVk6kC2/f0pOX/ygSXV9m+rIKF13s76fVBGSEzp4UL/PqLHLLUmf8xfXIAhsTehfeLMxOLqSIXx5Htq6Jv3kNRaICQ2bHZHukDQOykkOrCDr6pE9EAOx+LPFiQUjsDHqiMoziDmCCkWDNv6Fg46v6uc77ahw+3EDetKi5H0wNncMg2zae6lGQrTLZbkxFBU+zRV4NmTrJy3BUof68oTn4pMuMvtMNJx5kRy8Mz9V2e/s+VX9ilogD3mZEp7jOSIpra5xYrU52m+dmThgeHzLTPm4Nzj4DztOkkKQXxMT/Mr3QrUJ/OvK2vZycy+0qanys51rkae1VEhiyLdCffT7eWQmvZdxGJ6tlgGdzb5zg7we7vf4FD0wm5IdcHwAh9N0ImepWNrOpzVxeS4ZniHHCmw8hRPhZJVs+bl+en+5jkmdKCRkeIjR6UJmg0JNDW/3ieUAMx81rW4duWkOUjqTovIAyKgyWUQKIezrG904WB4XhwRhvr5ZDKtwbJEE6Naa5yB2yz7MC2sGbITI7WLpnwQkPmgP2f4kG6LC2+fps6ePkfjg6Umen3xVzqt7Dan1eqhDezSpAKIv71afXBrKMGwPaRgILmBnS3qOGaPtIfwM59iJpfwuuEicwO2EeZVL2zooQ8SHw2a7nv12QnFseGG2lmzpttLlAWDSL3IxQISTc+eXq/KEgpydvyseqG1/wRLbO5n7ooWW/rcr6Qpo4xjcmd4r8Nv8Gts2Te0DTVyq5Ad/jhyiHugJyimL0hjjXHnoiBOp6rBRFzrMD2DzdVGP7h+2XGAvPp8ugpUT0na8xuiey/r5GWbBhvPqeIMZ6Uayo0R58seM2pa2VEBlLzl2800NOKSaSvlB7QCGQMg1gOp12/64RrRPC5vGugWuZHfHzcug59DWkoCubmpz9hcuXKTeMR0IULEdjkXRZUrELjYznHHxZZERhLOrLOK38ZFpHlHDEmsiMsrqEjs1IAbvEgZXdsi2KDRT4VHwNcfGGvqwR4uU/hDyXsV2chFRleDM1c9dlzQZnfmSK3bPSGKS7lD4CoxqzbVXXl1+EwlW11apdw3MGeXpIBaPt+Gu7Nt0qQ8oCeaJveQrn3xuCVP3JhN14oTmW/CVP7MXWIiCxVHNUer5ELiWZQN6uDIbbtT0czzc/SKmwxuIVyteyatfS1j9FUR61XT7FtwAYc40xmfwEa2/5qJJ4c2GXpH8orqIcTPdAaFGaFr4ZoAC0XMksTNUPOfVyRrbq/ZEsZ6InA0TTdl52UQgnaFSI7qibjw96ivMVtqG68aptzgk3LrPjdPFQBAvOAaO9AwaL8J74PpXLikNEP+cN/lNcsLsEEjOoVeVGun7rR6g/cPjh32y5nPcdbR/NDtUimyIIJlwtwwsz8mvQFVVGP3rM5rxLPifmeoBdlWcFus44qq5klSktm8jaLfi5b4AzA/a07timQaZUlgKygrHqSkDBkHuwE+4rN8R8290unai1bds6pbWfb8jr5cyMc4ljpacyB3AfH0961fL14vuGWDa9TLDR1McZ1gPYlLju+XINCFWJM8X8yweCqwQGeTlN2pBpDGgBK07YQL7UcZ7fzPtYHbr7N4jW0uLbY+wOIQLfU9YTJWwJmnXs1l7nVnzrUbKFVbvNsP7kQvzfU6cv5CRBM30pC1TOeXfo7ITklZ8sTwklcs4CCRyPdg6fRTbRALIsrwML1NyET7LM6s0V+nGz41qlaAL8PHwDOKwKr5LEFBGg13sugpsZz4ugRtwUOZQh7DkxD7xE+pWwUlLkImsJ2GTl/W1JLEzG5lZUr4KpxVRrKsVEpE6+Hf6Q/78W3oBXC8T2HS23QQWm8FYoDZ9/9/xNSdA8i5QD6XgCFpKVH0UtiJgX6nx6NpsRJDg3KGAnFe+x+ggqIX15rnHJB/RDSzMbBEueybO+iCAW6lA9+qF1GnVncGwPEaPgvoyE+BO4z1C73xVEaM7r17pK0+RPWbIaMixf8VQlxHEslOgcTq66YGmjqaVVeoOfZeAWTBdgUPgL9tvHqBRZzHRrPdzA8IyZUfg3lKhcX+L0uDDHO9pvYRML5TGkmXrhO2X9eDGySxzeuGwDltsPx7qRBtkUefHkVkCyMFPk7cEuC1U0H8Y1/11g+gxGuvFtXeFre0gqxYcwIOEy+3iZT2iixSTAsml1VD0C8SO/CJDMrdRlQcoeH4ecA1xxyjZaXcUyKKHrSUkz8Wvs59yJzOGfMZ9XdlEaOwgKZ/ZTuTYhOsmemyOInsBWnz3h59G7as9ndsU7X1hdjNWUJcf1eZlHXFgW6XNcwzzHo9ZK7jM/g8c1aocP6aLLj9i/Pl4FscKAiCuGjcyQt50UHzk7en7Z0gP3bDJhAF2HPZE1z0pv8oaBAsAm1RPtIvONSfZQrURRvMMTVSC6SfIW4znFznvOhj45SZ7t9wRm93rVvU9psOUABYpSv4mlbkamkqV6FOxv28gh256A426REscy/AUUeZ1MSNrm3d5bvxo8ThbBha6lXacW7Wx/e30fnmZ/kfFmbLKcG1lo4m91qsWsxDkNGrbPpValTRrLfuBddMDdE7Aou0c+PVR4hjfYVM9S1q4EsKnH0aNLxPcVmGiNwPnSafc7GVp7CIp7Q2F2mfKYskkLth0RRSlwqRKbZ3TV80bsSr6SfZCvO40+H7V3AYuawNg2sVo7Y9ylR79L9ErCSs89CKn4orL+TVBAPr71McUu1U+Q0tA+f5M7AI3lzXxTEaejGA9cqZX7HiyYGdPtGhsNtTsz2TsvmZsqYoxtLAsveX0VYI+gcA9+QqWWnKeXUbpwSkTLwJC2fclHZ+8C4iYQLlXVso9xx8aD53u19E3RizW+Q8zrrp/Uy25yzFzf/5wOa9Za3mnDycqpk1G5FJLTg/ZtiFO8REd8zL45lics41m4/mcsKzLgB0U56zwsGQx60kKQPFfwKTrrmaQby9EFE9nsNPwCdDMoUQFof97NOI1xPml2NVkSxk/HAcz6NpfWhuM3RKI/+g+XZoBoC2ZM3Hc38EHf8FGDB3fw2ngXCfcIR0TNpbyI+CvYWCnHrpVqPx8ZDHNFG3mXiA4P7kEBitJbmGJEKuTgjS/oAvV3QPFcsqjFFPKm+89//yr6QZRmG73wiHv2Co9X8Cj2rrPqkXk/e8+an7V8J0ODxv80JGDOMcTnFzC50XLV187zZLKMqbV+f1qhT3lBAxT8nmJM70VsZsmbifTtoav9e2rkRlCxM9M7+WUepyuSJmfwcfv5Tm5DJwS/8yxIeZX8bMMKRyR5aDH+D7optvRiL0SCmZO2sZtj4e/NuDgNJnVZodGvEBDFccJJvBcX5QKZBNRXbVDoZlBFles2WrVgrWoDRq+8Aa5bhByPAFRufSNjiNemFkNr93GDfs6cJAm67+fhFwMG1ZC0jgj9LzZehDZ6EDEo6ITVwTOXDSErybhaW0+obpg7YwOhU6ZqAT/Gss8IFXBUVtZmR7deR6DMtbQtpeyio3HJhceA2PnhjGhXdkW1VeLa6827iVkFW1FIMkyulUARsKO/COCifUAYrD4E0m1C7fHV5FW3nPq96PjnuJ5LPJGPzqxRP7UmdNyt55hc9ZIpOiv8HBfC/m510AUC5WHnI0qGGta65jqfpAEpRcWYNUqTfBx1be+QYXbqimp6eSTxofoFEt3Vfqm/sEAViVFg29oiCLN/1GWLerGhQK3S0wPOS101llYzGZIVW19nY0YMQ2nAIBmyjzzFZJrEAUv9RWxC1o0lz7ak2zT0STYk7lVNxoMHeDGC5VMIoiUP4OwD3oyGl9ZadS4OYKnIoLGc2AoH5fRmMA0nlewCiQ09O8ACaBDl/ikI+dhW1mg0a46blxh9vC/22/aqh/SXGeQAfD4l5T1NpEb8Bv5kAJKiLzbcCwU726S1kAMr+KP3WoCEduAA" alt="Kung Pao Chicken">
+                <div class="caption">Kung Pao Chicken - Chinese</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Sweet and Sour Pork">
+                <div class="caption">Sweet and Sour Pork - Chinese</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Mapo Tofu">
+                <div class="caption">Mapo Tofu - Chinese</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1532636875304-0c89119d9b4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVqbFI2CF0k1TLmeOYgCgHMAUzIEKqi-4YQw&s" alt="Peking Duck">
+                <div class="caption">Peking Duck - Chinese</div>
+            </div>
+            
+            <!-- Italian Cuisine -->
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Margherita Pizza">
+                <div class="caption">Margherita Pizza - Italian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1551892376-2c0c5f4c8f0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSooGC5EtJDhqfDtE9VYkSVsLKI4hfD3Ed6jSxn2Xp0xNGdFSl3yVhG7TTfPcBfscdFtChi6wpAuhiUXImio6gDOlYlKamtsXoBSjHH6T4gKg&s=10" alt="Spaghetti Carbonara">
+                <div class="caption">Spaghetti Carbonara - Italian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Lasagna">
+                <div class="caption">Lasagna - Italian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Tiramisu">
+                <div class="caption">Tiramisu - Italian</div>
+            </div>
+            
+            <!-- Indian Cuisine -->
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Butter Chicken">
+                <div class="caption">Butter Chicken - Indian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1563379091339-03246963d96c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="data:image/webp;base64,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" alt="Biryani">
+                <div class="caption">Biryani - Indian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Samosa">
+                <div class="caption">Samosa - Indian</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Paneer Tikka">
+                <div class="caption">Paneer Tikka - Indian</div>
+            </div>
+            
+            <!-- Sri Lankan Cuisine -->
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1589647363585-f4a7d3877b10?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Kottu Roti">
+                <div class="caption">Kottu Roti - Sri Lankan</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Fish Ambul Thiyal">
+                <div class="caption">Fish Ambul Thiyal - Sri Lankan</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Lamprais">
+                <div class="caption">Lamprais - Sri Lankan</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1488477304112-4944851de03d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')">
+                <img src="https://images.unsplash.com/photo-1488477304112-4944851de03d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Wattalapam">
+                <div class="caption">Wattalapam - Sri Lankan</div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2026 Restaurant Name. All rights reserved.</p>
+    </footer>
+    
+    <div class="lightbox" id="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+    
+    <script>
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+        
+        // Close lightbox on click outside image
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
